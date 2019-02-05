@@ -16,23 +16,39 @@
 <link rel="stylesheet" type="text/css" media="screen" href="assets/css/style.css" />
 
 <title>test</title>
+
+<style>
+
+</style>
 </head>
 <body>
-
-    <!-- <h1>Are you an emotional person?</h1> -->
-    <!-- <h2>If so, welcome home</h2> -->
-
-    <!-- button to kickoff our fun game -->
-    <button>Click me</button>
-
-    <!-- holds FACE Api bullshit -->
-    <!-- <div id="facesContainer" style="position: relative;"> -->
-    <!-- holds specific image from URL -->
-    <div id="imageHolder" >  </div>
-
-    </div>
-    <textarea id="text" readonly="readonly"></textarea>
-
+        <header>
+            <ul class="main-nav">
+                <li class="active"><a href="">HOME</a></li>
+                <li><a href="index1.html">COMPARE</a></li>
+                <li><a href="index.html">EMOTION</a></li>
+            </ul>
+            <div><h1>S u r F a c e</h1></div>
+        </header>
+        <div id="container">
+            <form action="#">
+                <div id="box">
+                    <button type="button" class="btn btn-secondary">Photo Search</button>
+                    <input id="people-search" type="text">
+                </div>
+            </form>
+            <!-- <div id="random-photo"></div> -->
+            <div class="card random-photo" style="width: 18rem; height: 18rem;">
+                <div class="card-header" id="imageHolder">
+                    Random Photograph
+                </div>
+                <canvas id="my-canvas" style="border: rebeccapurple;">  
+                </canvas>
+            </div>
+        </div>
+        <hr>
+        <h3 id="photos">Similar Faces</h3>
+        <div id="similar-photos"></div>
     <script>
     // Face++ (API Key, API Secret Key, 1)
     var facepp = new FACEPP('tofb2KC3K9WNkY2-A_VISLJVjWMQh5Df', 'xMmnpBZx-r-3xNFAZJUGKXLnLAEFG4Ls', 1);
@@ -54,11 +70,13 @@
             src: photo[random_int].src.medium
         });
         //    puts response image in #imageHolder
-        $("#imageHolder").empty();
-        $("#imageHolder").append(image);
+        // $("#imageHolder").empty();
+        // $("#imageHolder").append(image);
 
-        console.log(photo);
-        console.log(photo[random_int].src.medium);
+        // hold the image src in variable imageSource
+        imageSource = photo[random_int].src.medium;
+        console.log(imageSource);
+
         //    URL ACCESS
         let dic = {'image_url' : photo[random_int].src.medium};
         facepp.detectFace(dic,success, failed);
@@ -75,28 +93,31 @@
                 facepp.detectFace(dataDic, success, failed);
             }
         }
+
+        // run renderImage in success(e)
+        // draws a rectangle on the canvas -- its coordinates match the face coordinates
+
         // If Dic is successful
         function success(e){
             console.log("Success! A face was detected");
             console.log(e);
             let textView = document.getElementById('text');
             // Shows stringified detection object in #text
-            textView.innerText = JSON.stringify(e,null,"\t");
+            // textView.innerText = JSON.stringify(e,null,"\t");
             let imageView = document.getElementById('imageHolder');
             const faces = e.faces;
             for (const index in faces){
                 const face = faces[index];
                 const face_rectangle = face.face_rectangle;
                 console.log(face_rectangle);
+                renderImage(photo)
 
-                // var canvas = document.getElementById('imageHolder');
-                // var ctx = canvas.getContext("2d");
-                // ctx.fillStyle = "#FF0000";
-                // ctx.fillRect(0, 0, 190,75);
+                // call renderImage to draw the rectangle
+
+                renderImage(imageSource, face_rectangle);
+
         // var gender = face.attributes.gender.value;
         // console.log("Gender: " + gender);
-        // emotion object
-        // returns a number value (0-100)
         // var emotion = face.attributes.emotion;
         // var anger = emotion.anger;
         // var disgust = emotion.disgust;
@@ -106,12 +127,9 @@
         // var happiness = emotion.happiness;
         // console.log("emotion response: " + emotion);
 
-        // changes border color of face container based on gender
-        // const borderColor = (gender == 'Male') ? 'blue' : 'red';
-        // console.log('face frame color：' + borderColor);
         // gets coordinates of face area
         var faceX = face_rectangle.left;
-        console.log(faceX);
+   
         var faceY = face_rectangle.top;
         var faceW = face_rectangle.width;
         var faceH = face_rectangle.height;
@@ -127,82 +145,48 @@
         // scales image
         const offsetX = (width - imageW)*0.5;
         const offsetY = (height - imageH)*0.5;
-    
-        $('<div>').css({
-            position: 'absolute',
-            top: faceY * scale + offsetY,
-            left: faceX * scale + offsetX,
-            height: faceH * scale,
-            width: faceW * scale,
-            border: '2px solid black',
-            // transform: 'rotate(' + roll + 'deg)'
-        }).appendTo($("#imageHolder"));
     }
 }
 //if this fails --
 function failed(e){
-    console.log("Failed! No face detected")
+    console.log("Failed! No face detected");
     console.log(e);
     let textView = document.getElementById('text');
     textView.innerText = JSON.stringify(e);
 }
-
-//orientation for face area container
-function fixOrientention(readImage,imageView) {
-    const image = new Image();
-    image.onload = () => {
-        const canvas = document.createElement('canvas');
-        const initSize = image.src.length;
-        let width = image.naturalWidth;
-        console.log(width);
-        let height = image.naturalHeight;
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        EXIF.getData(image, function () {
-            const orientation = EXIF.getTag(this, 'Orientation');
-            console.log(`orientation:${orientation}`);
-            switch (orientation) {
-                case 1:
-                    canvas.height = height;
-                    canvas.width = width;
-                    ctx.drawImage(image, 0, 0, width, height);
-                    break;
-                case 6:
-                    canvas.height = width;
-                    canvas.width = height;
-                    ctx.rotate(Math.PI / 2);
-                    ctx.translate(0, -height);
-                    ctx.drawImage(image, 0, 0, width, height);
-                    break;
-                case 3:
-                    canvas.height = height;
-                    canvas.width = width;
-                    ctx.rotate(Math.PI);
-                    ctx.translate(-width, -height);
-                    ctx.drawImage(image, 0, 0, width, height);
-                    break;
-                case 8:
-                    canvas.height = width;
-                    canvas.width = height;
-                    ctx.rotate(-Math.PI / 2);
-                    ctx.translate(-width, 0);
-                    ctx.drawImage(image, 0, 0, width, height);
-                    break;
-                default:
-                    canvas.height = height;
-                    canvas.width = width;
-                    ctx.drawImage(image, 0, 0, width, height);
-                    break;
-            }
-        });
-        // canvas method
-        var newBase64 = canvas.toDataURL('image/jpeg', 1.0);
-        imageView.src = newBase64;
-    };
-    image.src = readImage;
-}
     });
 });
+
+//HELPER FUNCTIONS
+function renderImage(image_src, face_rectangle) {
+   var img = new Image();
+   img.src = image_src;
+
+   img.onload = function() {
+       var canvas = document.getElementById('my-canvas');
+       var ctx = canvas.getContext("2d");
+       canvas.width = img.width;
+       canvas.height = img.height;
+
+       var imgSize = calculateAspectRatioFit(img.width, img.height, canvas.clientWidth, canvas.clientHeight);
+       canvas.width = imgSize.width;
+
+       ctx.drawImage(img, 0, 0,imgSize.width, imgSize.height);
+       ctx.rect(face_rectangle.left, face_rectangle.top, face_rectangle.width, face_rectangle.height); //left, top, width, height
+       ctx.strokeStyle = "#FFFF00";
+       ctx.stroke();
+   }
+}
+
+function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
+   var ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
+   var rtnWidth = srcWidth * ratio;
+   var rtnHeight = srcHeight * ratio;
+   return {
+       width: rtnWidth,
+       height: rtnHeight
+   }
+}
           
     </script>
 </body>

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,7 +6,7 @@
   <script src="faceapi_commons.js"></script>
 
     <!-- jQuery -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
   <script type="text/javascript" src="faceapi_exif.js"></script>
   <script type="text/javascript" src="face_detection.js"></script>
@@ -14,29 +15,12 @@
 
   <!-- for proper image sizing and analyzing -->
     <script type="text/javascript" src="faceapi_display.js"></script>
-    <link rel="stylesheet" type="text/css" media="screen" href="assets/css/style.css" />
 
     <title>Find Facial Emotion:</title>
 </head>
 
 
-<!-- <style>
-
-header h1 {
-    background-image: url("assets/images/photo_collage.jpg");
-    /* opacity: .5; */
-    text-align: center;
-    /* background-color: #ffffff; */
-    color: #ffffff;
-    font-size: 48px;
-    font-weight: bolder;
-    font-family: cursive;
-    /* margin-left: 35%;
-    margin-right: 35%; */
-    padding: 8% 35% 8% 35%;
-    /* margin: 5%; */
-}
-
+<style>
 .container{
     position: relative;
     display: block;
@@ -44,7 +28,6 @@ header h1 {
     text-align: center;
     background-color: white;
 }
-
 .button{
     position: relative;
     top: 10px;
@@ -57,14 +40,10 @@ header h1 {
     text-align: center;
     background-color: blue;
     color: white;
-    margin-bottom: 10%;
 }
-
-
     #input{
         opacity: 0;
     }
-
     #facesContainer{
         position: absolute;
         top: 84px;
@@ -76,49 +55,35 @@ header h1 {
         background-color: darkgray;
         text-align: center;
         margin: 0 auto;
-        margin-top: 10%;
     }
-
     #preview{
         vertical-align: middle;
         max-width: 100%;
         max-height: 100%;
     }
-
     #text{
         left: 5%;
         position: absolute;
         top: 414px;
         width: 90%;
         bottom: 10px;
-        margin-top: 15%;
-
     }
-
-</style> -->
+</style>
 
 <body>
-    <header>
-        <ul class="main-nav">
-            <li class="active"><a href="">HOME</a></li>
-            <li><a href="index1.html">COMPARE</a></li>
-            <li><a href="index.html">EMOTION</a></li>
-        </ul>
-        <h1>S u r F a c e</h1>
-    </header>
+
 <div class="container">
         <!-- <h4>Please use a small photo file! I am just a baby...</h4> -->
-        <p class="bScore">Female Beauty Score: <span id="FbeautyScore"></span> Male Beauty Score: <span id="MbeautyScore"></span> Gender:<span id="genderScore"></span>
+        <p>Female Beauty Score: <span id="FbeautyScore"></span> Male Beauty Score: <span id="MbeautyScore"></span> Gender:<span id="genderScore"></span>
 
         Happiness Score: <span id="emotionsScore"></span>
         </p>
-    <!-- <div class="button" onclick=clickInput()>Choose a photo:</div> -->
+    <div class="button" onclick=clickInput()>Choose a photo:</div>
 
-    <!-- <input id="input" type="file" accept="image/*" onchange="selectImage(this)"/> -->
+    <input id="input" type="file" accept="image/*" onchange="selectImage(this)"/>
 
     <div id="facesContainer">
-
-        <img id="preview" onclick="selectImage(this)" type="image" src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg"/>
+        <img id="preview" />
 
     </div>
 
@@ -129,105 +94,57 @@ header h1 {
 </html>
 
 <script>
-//     // resets container when user wants to add a new image
-//     resetContainer();
-//     function clickInput(){
-//         document.getElementById('input').click();
-//    }
+    // resets container when user wants to add a new image
+    resetContainer();
+    function clickInput(){
+        document.getElementById('input').click();
+   }
 </script>
   <script>
-
 var facepp = new FACEPP('tofb2KC3K9WNkY2-A_VISLJVjWMQh5Df', 'xMmnpBZx-r-3xNFAZJUGKXLnLAEFG4Ls', 1);
     // // upload an image as an image URL
-    let dic = {'image_url' : 'https://upload.wikimedia.org/wikipedia/en/d/db/MtFace_%28Small%29.jpg'};
-    facepp.detectFace(dic,success,failed);
-
-
-    $("#search").on("click", function () {
-            var queryURL = "https://api.pexels.com/v1/search?query=face&per_page=1&page=1";
-           $.ajax({
-                   url: queryURL,
-                   method: "GET",
-                   beforeSend: function(xhr){xhr.setRequestHeader("authorization", "563492ad6f91700001000001ef9932d9916848898cc2c5b1b0ec5725");}
-           }).then(function (response) {
-               selectImage(response);
-    
-        
-        // get entered URL
-        function selectImage(data){
-            // photo from pexels request
-            var photo = response.photos;
-               var image = $("<img>");
-               image.attr({
-                   src: photo[0].src.small
-               });
-               $("#facesContainer").append(image);
-               console.log(photo);
-               console.log(photo[0].src.small);
-        };
-           });
-        });
-
+    // let dic = {'image_url' : 'https://images.pexels.com/photos/1831789/pexels-photo-1831789.jpeg'};
+    // facepp.detectFace(dic,success,failed);
 // get input
-function selectImage(img){
+function selectImage(input){
     let imageView = document.getElementById('preview');
-
-    var imageURL = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg";
-
     const reader = new FileReader();
-    
-    // reader.readAsDataURL(input.files[0]);
-    reader.readAsDataURL(imageURL);
-
+    reader.readAsDataURL(input.files[0]);
     reader.onload = function (e) {
+        $("#facesContainer div").remove();
         //base64 data for the image
         const base64Image = e.target.result;
-        console.log(e.target.result);
-
         fixOrientention(base64Image,imageView);
-
         //base64 way to upload images
-        let dic = {'image_url' : base64Image};
-
+        let dic = {'image_base64' : base64Image};
         facepp.detectFace(dic,success,failed);
         
         // turn image (base64) into binary
         let imageData = facepp.dataURItoBlob(base64Image);
       
         let attributes = 'gender,age,smiling,headpose,facequality,blur,eyestatus,emotion,ethnicity,beauty,mouthstatus,eyegaze,skinstatus';
-
-        let dataDic = {'image_url':imageData,'return_landmark':2,'return_attributes':attributes};
+        let dataDic = {'image_file':imageData,'return_landmark':2,'return_attributes':attributes};
         console.log(dataDic);
-
         facepp.detectFace(dataDic,success,failed);
     }
 }
-
 //reads image and returns json parameters
 function success(e){
-
     console.log(e);
     let textView = document.getElementById('text');
     textView.innerText = JSON.stringify(e,null,"\t");
-
     let imageView = document.getElementById('preview');
-
     const faces = e.faces;
-
     for (const index in faces){
         const face = faces[index];
-
         // a rectangle area for the face location on the image - holds coordinates of face area
         const face_rectangle = face.face_rectangle;
-
         var roll = face.attributes.headpose.roll_angle;
-
         //gender attribute
         var gender = face.attributes.gender.value;
         console.log("Gender: " + gender);
         // append to html
         $("#genderScore").text(gender);
-
         // emotion object
         // returns a number value (0-100)
         var emotion = face.attributes.emotion;
@@ -237,45 +154,34 @@ function success(e){
         var surprise = emotion.surprise;
         var fear = emotion.fear;
         var happiness = emotion.happiness;
-
         console.log("emotion response: " + emotion);
         // append to html
         $("#emotionsScore").text(face.attributes.emotion.happiness);
-
         // female beauty score
         $("#FbeautyScore").text(face.attributes.beauty.female_score);
         // male beauty score
         $("#MbeautyScore").text(face.attributes.beauty.male_score);
       
-
         // changes border color of face container based on gender
         const borderColor = (gender == 'Male') ? 'blue' : 'red';
-
         console.log('face frame color：' + borderColor);
-
         // gets coordinates of face area
         var faceX = face_rectangle.left;
         var faceY = face_rectangle.top;
         var faceW = face_rectangle.width;
         var faceH = face_rectangle.height;
-
         //square face container
         var width = 320;
         var height = 320;
-
         var imageW = imageView.width;
         var imageH = imageView.height;
-
         var naturalWidth = imageView.naturalWidth;
         var naturalHeight = imageView.naturalHeight;
-
         const scale = imageW / naturalWidth;
-
         console.log('scale > ' + scale);
         // scales image
         const offsetX = (width - imageW)*0.5;
         const offsetY = (height - imageH)*0.5;
-
     
         $('<div/>').css({
             position: 'absolute',
@@ -288,40 +194,31 @@ function success(e){
         }).appendTo($("#facesContainer"));
     }
 }
-
 //if this fails --
 function failed(e){
     console.log(e);
     let textView = document.getElementById('text');
     textView.innerText = JSON.stringify(e);
 }
-
 //orientation for face area container
 function fixOrientention(base64Image,imageView) {
     const image = new Image();
-
     image.onload = () => {
         const canvas = document.createElement('canvas');
-
         const initSize = image.src.length;
-
         let width = image.naturalWidth;
         let height = image.naturalHeight;
-
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
         EXIF.getData(image, function () {
             const orientation = EXIF.getTag(this, 'Orientation');
             console.log(`orientation:${orientation}`);
             switch (orientation) {
-
                 case 1:
                     canvas.height = height;
                     canvas.width = width;
                     ctx.drawImage(image, 0, 0, width, height);
                     break;
-
                 case 6:
                     canvas.height = width;
                     canvas.width = height;
@@ -329,7 +226,6 @@ function fixOrientention(base64Image,imageView) {
                     ctx.translate(0, -height);
                     ctx.drawImage(image, 0, 0, width, height);
                     break;
-
                 case 3:
                     canvas.height = height;
                     canvas.width = width;
@@ -337,7 +233,6 @@ function fixOrientention(base64Image,imageView) {
                     ctx.translate(-width, -height);
                     ctx.drawImage(image, 0, 0, width, height);
                     break;
-
                 case 8:
                     canvas.height = width;
                     canvas.width = height;
@@ -345,7 +240,6 @@ function fixOrientention(base64Image,imageView) {
                     ctx.translate(-width, 0);
                     ctx.drawImage(image, 0, 0, width, height);
                     break;
-
                 default:
                     canvas.height = height;
                     canvas.width = width;
@@ -353,7 +247,6 @@ function fixOrientention(base64Image,imageView) {
                     break;
             }
         });
-
         // canvas method
         var newBase64 = canvas.toDataURL('image/jpeg', 1.0);
         imageView.src = newBase64;
@@ -361,5 +254,5 @@ function fixOrientention(base64Image,imageView) {
     image.src = base64Image;
 }
   </script>
-</body>
-</html>
+  </body>
+  </html>
