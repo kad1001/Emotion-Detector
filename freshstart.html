@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<!-- Face++ Javascript -->
+<script src="faceapi_commons.js"></script>
+<script type="text/javascript" src="faceapi_exif.js"></script>
+<script type="text/javascript" src="face_detection.js"></script>
+<script type="text/javascript" src="faceapi_display.js"></script>
+
+
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<!-- CSS -->
+<link rel="stylesheet" type="text/css" media="screen" href="assets/css/style.css" />
+
+<title>test</title>
+</head>
+<body>
+
+    <!-- <h1>Are you an emotional person?</h1> -->
+    <!-- <h2>If so, welcome home</h2> -->
+
+    <!-- button to kickoff our fun game -->
+    <button>Click me</button>
+
+    <!-- holds FACE Api bullshit -->
+    <!-- <div id="facesContainer" style="position: relative;"> -->
+    <!-- holds specific image from URL -->
+    <div id="imageHolder" >  </div>
+
+    </div>
+    <textarea id="text" readonly="readonly"></textarea>
+
+    <script>
+    // Face++ (API Key, API Secret Key, 1)
+    var facepp = new FACEPP('tofb2KC3K9WNkY2-A_VISLJVjWMQh5Df', 'xMmnpBZx-r-3xNFAZJUGKXLnLAEFG4Ls', 1);
+
+    $("button").on("click", function () {
+        var queryURL = "https://api.pexels.com/v1/search?query=face&per_page=25&page=1";
+        $.ajax({
+                url: queryURL,
+                method: "GET",
+                beforeSend: function(xhr){xhr.setRequestHeader("authorization", "563492ad6f91700001000001ef9932d9916848898cc2c5b1b0ec5725");}
+        }).then(function (response) {
+
+    // photo from pexels request
+        var photo = response.photos;
+        var image = $("<img>");
+        var random_int = Math.floor(Math.random() * (25 + 1));
+
+        image.attr({
+            src: photo[random_int].src.medium
+        });
+        //    puts response image in #imageHolder
+        $("#imageHolder").empty();
+        $("#imageHolder").append(image);
+
+        console.log(photo);
+        console.log(photo[random_int].src.medium);
+        //    URL ACCESS
+        let dic = {'image_url' : photo[random_int].src.medium};
+        facepp.detectFace(dic,success, failed);
+
+        function selectImage(){
+            let imageView = document.getElementById('imageHolder');
+            const reader = new FileReader();
+            reader.readAsDataURL(photo[random_int].src.medium);
+            reader.onload = function (e) {
+                const readImage = e.target.result;
+                let imageData = facepp.dataURItoBlob(readImage);
+                let attributes = 'gender,age,smiling,headpose,facequality,blur,eyestatus,emotion,ethnicity,beauty,mouthstatus,eyegaze,skinstatus';
+                let dataDic = {'image_url': imageData, 'return_landmark': 2, 'return_attributes': attributes};
+                facepp.detectFace(dataDic, success, failed);
+            }
+        }
+        // If Dic is successful
+        function success(e){
+            console.log("Success! A face was detected");
+            console.log(e);
+            let textView = document.getElementById('text');
+            // Shows stringified detection object in #text
+            textView.innerText = JSON.stringify(e,null,"\t");
+            let imageView = document.getElementById('imageHolder');
+            const faces = e.faces;
+            for (const index in faces){
+                const face = faces[index];
+                const face_rectangle = face.face_rectangle;
+                console.log(face_rectangle);
+
+                // var canvas = document.getElementById('imageHolder');
+                // var ctx = canvas.getContext("2d");
+                // ctx.fillStyle = "#FF0000";
+                // ctx.fillRect(0, 0, 190,75);
+        // var gender = face.attributes.gender.value;
+        // console.log("Gender: " + gender);
+        // emotion object
+        // returns a number value (0-100)
+        // var emotion = face.attributes.emotion;
+        // var anger = emotion.anger;
+        // var disgust = emotion.disgust;
+        // var sadness = emotion.sadness;
+        // var surprise = emotion.surprise;
+        // var fear = emotion.fear;
+        // var happiness = emotion.happiness;
+        // console.log("emotion response: " + emotion);
+
+        // changes border color of face container based on gender
+        // const borderColor = (gender == 'Male') ? 'blue' : 'red';
+        // console.log('face frame color：' + borderColor);
+        // gets coordinates of face area
+        var faceX = face_rectangle.left;
+        console.log(faceX);
+        var faceY = face_rectangle.top;
+        var faceW = face_rectangle.width;
+        var faceH = face_rectangle.height;
+        //square face container
+        var width = 320;
+        var height = 320;
+        var imageW = imageView.width;
+        var imageH = imageView.height;
+        var naturalWidth = imageView.naturalWidth;
+        var naturalHeight = imageView.naturalHeight;
+        const scale = imageW / naturalWidth;
+        console.log('scale > ' + scale);
+        // scales image
+        const offsetX = (width - imageW)*0.5;
+        const offsetY = (height - imageH)*0.5;
+    
+        $('<div>').css({
+            position: 'absolute',
+            top: faceY * scale + offsetY,
+            left: faceX * scale + offsetX,
+            height: faceH * scale,
+            width: faceW * scale,
+            border: '2px solid black',
+            // transform: 'rotate(' + roll + 'deg)'
+        }).appendTo($("#imageHolder"));
+    }
+}
+//if this fails --
+function failed(e){
+    console.log("Failed! No face detected")
+    console.log(e);
+    let textView = document.getElementById('text');
+    textView.innerText = JSON.stringify(e);
+}
+
+//orientation for face area container
+function fixOrientention(readImage,imageView) {
+    const image = new Image();
+    image.onload = () => {
+        const canvas = document.createElement('canvas');
+        const initSize = image.src.length;
+        let width = image.naturalWidth;
+        console.log(width);
+        let height = image.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        EXIF.getData(image, function () {
+            const orientation = EXIF.getTag(this, 'Orientation');
+            console.log(`orientation:${orientation}`);
+            switch (orientation) {
+                case 1:
+                    canvas.height = height;
+                    canvas.width = width;
+                    ctx.drawImage(image, 0, 0, width, height);
+                    break;
+                case 6:
+                    canvas.height = width;
+                    canvas.width = height;
+                    ctx.rotate(Math.PI / 2);
+                    ctx.translate(0, -height);
+                    ctx.drawImage(image, 0, 0, width, height);
+                    break;
+                case 3:
+                    canvas.height = height;
+                    canvas.width = width;
+                    ctx.rotate(Math.PI);
+                    ctx.translate(-width, -height);
+                    ctx.drawImage(image, 0, 0, width, height);
+                    break;
+                case 8:
+                    canvas.height = width;
+                    canvas.width = height;
+                    ctx.rotate(-Math.PI / 2);
+                    ctx.translate(-width, 0);
+                    ctx.drawImage(image, 0, 0, width, height);
+                    break;
+                default:
+                    canvas.height = height;
+                    canvas.width = width;
+                    ctx.drawImage(image, 0, 0, width, height);
+                    break;
+            }
+        });
+        // canvas method
+        var newBase64 = canvas.toDataURL('image/jpeg', 1.0);
+        imageView.src = newBase64;
+    };
+    image.src = readImage;
+}
+    });
+});
+          
+    </script>
+</body>
+</html>

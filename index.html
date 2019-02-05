@@ -112,12 +112,13 @@ header h1 {
 
         Happiness Score: <span id="emotionsScore"></span>
         </p>
-    <div class="button" onclick=clickInput()>Choose a photo:</div>
+    <!-- <div class="button" onclick=clickInput()>Choose a photo:</div> -->
 
-    <input id="input" type="file" accept="image/*" onchange="selectImage(this)"/>
+    <!-- <input id="input" type="file" accept="image/*" onchange="selectImage(this)"/> -->
 
     <div id="facesContainer">
-        <img id="preview" />
+
+        <img id="preview" onclick="selectImage(this)" type="image" src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg"/>
 
     </div>
 
@@ -128,50 +129,74 @@ header h1 {
 </html>
 
 <script>
-    // resets container when user wants to add a new image
-    resetContainer();
-    function clickInput(){
-        document.getElementById('input').click();
-   }
+//     // resets container when user wants to add a new image
+//     resetContainer();
+//     function clickInput(){
+//         document.getElementById('input').click();
+//    }
 </script>
   <script>
 
 var facepp = new FACEPP('tofb2KC3K9WNkY2-A_VISLJVjWMQh5Df', 'xMmnpBZx-r-3xNFAZJUGKXLnLAEFG4Ls', 1);
-
     // // upload an image as an image URL
-    // let dic = {'image_url' : 'https://images.pexels.com/photos/1831789/pexels-photo-1831789.jpeg'};
-    // facepp.detectFace(dic,success,failed);
+    let dic = {'image_url' : 'https://upload.wikimedia.org/wikipedia/en/d/db/MtFace_%28Small%29.jpg'};
+    facepp.detectFace(dic,success,failed);
 
+
+    $("#search").on("click", function () {
+            var queryURL = "https://api.pexels.com/v1/search?query=face&per_page=1&page=1";
+           $.ajax({
+                   url: queryURL,
+                   method: "GET",
+                   beforeSend: function(xhr){xhr.setRequestHeader("authorization", "563492ad6f91700001000001ef9932d9916848898cc2c5b1b0ec5725");}
+           }).then(function (response) {
+               selectImage(response);
+    
+        
+        // get entered URL
+        function selectImage(data){
+            // photo from pexels request
+            var photo = response.photos;
+               var image = $("<img>");
+               image.attr({
+                   src: photo[0].src.small
+               });
+               $("#facesContainer").append(image);
+               console.log(photo);
+               console.log(photo[0].src.small);
+        };
+           });
+        });
 
 // get input
-function selectImage(input){
+function selectImage(img){
     let imageView = document.getElementById('preview');
 
-    const reader = new FileReader();
+    var imageURL = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg";
 
-    reader.readAsDataURL(input.files[0]);
+    const reader = new FileReader();
+    
+    // reader.readAsDataURL(input.files[0]);
+    reader.readAsDataURL(imageURL);
 
     reader.onload = function (e) {
-
-        $("#facesContainer div").remove();
-
         //base64 data for the image
         const base64Image = e.target.result;
+        console.log(e.target.result);
 
         fixOrientention(base64Image,imageView);
 
         //base64 way to upload images
-        let dic = {'image_base64' : base64Image};
+        let dic = {'image_url' : base64Image};
 
         facepp.detectFace(dic,success,failed);
-
         
         // turn image (base64) into binary
         let imageData = facepp.dataURItoBlob(base64Image);
       
         let attributes = 'gender,age,smiling,headpose,facequality,blur,eyestatus,emotion,ethnicity,beauty,mouthstatus,eyegaze,skinstatus';
 
-        let dataDic = {'image_file':imageData,'return_landmark':2,'return_attributes':attributes};
+        let dataDic = {'image_url':imageData,'return_landmark':2,'return_attributes':attributes};
         console.log(dataDic);
 
         facepp.detectFace(dataDic,success,failed);
