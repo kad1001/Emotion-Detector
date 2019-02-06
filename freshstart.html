@@ -39,10 +39,10 @@
             </form>
             <!-- <div id="random-photo"></div> -->
             <div class="card random-photo" style="width: 18rem; height: 18rem;">
-                <div class="card-header" id="imageHolder">
+                <div class="card-header" id="imageHolder" >
                     Random Photograph
                 </div>
-                <canvas id="my-canvas" style="border: rebeccapurple;">  
+                <canvas id="my-canvas" >  
                 </canvas>
             </div>
         </div>
@@ -58,7 +58,7 @@
         $.ajax({
                 url: queryURL,
                 method: "GET",
-                beforeSend: function(xhr){xhr.setRequestHeader("authorization", "563492ad6f91700001000001ef9932d9916848898cc2c5b1b0ec5725");}
+                beforeSend: function(xhr){xhr.setRequestHeader("authorization", "563492ad6f917000010000011eaf1f99f1c4475595c69fdf6b3d90cd");}
         }).then(function (response) {
 
     // photo from pexels request
