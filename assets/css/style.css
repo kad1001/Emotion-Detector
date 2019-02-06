@@ -179,3 +179,21 @@ hr {
         margin-top: 15%;
 
     }
+
+    .card{
+        margin-left: 40%;
+    }
+
+    h2{
+        text-decoration-line: underline;
+    }
+
+    img{
+        height: 134px;
+        width: 268px;
+        object-fit: scale-down;
+    }
+
+    canvas{
+        height: 295px;
+    }
