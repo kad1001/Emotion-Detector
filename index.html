@@ -44,13 +44,17 @@
                 </div>
             </form>
             <!-- <div id="random-photo"></div> -->
-            <div class="card random-photo" style="width: 18rem; height: 18rem;">
-                <div class="card-header" id="imageHolder" >
+            <!-- <div class="card random-photo" style="width: 18rem; height: 18rem;"> -->
+                <div class="card-header"  >
+                    <!-- margin-left margin-right auto for image div -->
                     Random Photograph
                 </div>
+                <div class="imageBox">
+                <div id="imageHolder"></div>
                 <canvas id="my-canvas" >  
                 </canvas>
             </div>
+            <!-- </div> -->
         </div>
         <hr>
         <h3 id="photos">Similar Faces</h3>
@@ -64,12 +68,14 @@
         $.ajax({
                 url: queryURL,
                 method: "GET",
-                beforeSend: function(xhr){xhr.setRequestHeader("authorization", "563492ad6f917000010000011eaf1f99f1c4475595c69fdf6b3d90cd");}
+                beforeSend: function(xhr){xhr.setRequestHeader("authorization", "563492ad6f9170000100000142244819b92d47e6bd879b704221ab7d");}
         }).then(function (response) {
 
     // photo from pexels request
         var photo = response.photos;
         var image = $("<img>");
+        image.addClass("generateImage");
+
         var random_int = Math.floor(Math.random() * (25 + 1));
 
         image.attr({
