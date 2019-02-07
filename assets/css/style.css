@@ -92,7 +92,7 @@ input[type=text], select, textarea {
     text-align: center;
     font-weight: 400;
     line-height: 1.5;
-    background-color: #6c757d;
+    /* background-color: #6c757d; */
     color: white;
 }
 
@@ -130,13 +130,13 @@ hr {
     background-color: white;
 }
 
-.button{
+button{
     position: relative;
     top: 10px;
-    font-size: 16px;
+    font-size: 25px;
     width: 90%;
-    height: 34px;
-    line-height: 34px;
+    height: 40px;
+    line-height: 40px;
     display: block;
     margin-left: 5%;
     text-align: center;
@@ -180,18 +180,21 @@ hr {
 
     }
 
-    .card{
-        margin-left: 40%;
+    .imageBox {
+        /* align-content: center; */
+        
+        margin: auto;
     }
 
-    h2{
-        text-decoration-line: underline;
+    #my-canvas {
+        margin-left: auto;
+        margin-right: auto;
+   
+
     }
 
-    img{
-        height: 134px;
-        width: 268px;
-        object-fit: scale-down;
-    }
+    /* #imageHolder {
+        align: center;
+    } */
 
-    
+  
