@@ -37,20 +37,19 @@
             <div><h1>S u r F a c e</h1></div>
         </header>
         <div id="container">
-            <form action="#">
-                <div id="box">
+            <!-- <form action="#"> -->
+                <div id="box" style="text-align: center;">
                     <button type="button" class="btn btn-secondary"> <i class="far fa-user-circle"></i> </button>
-       
                 </div>
-            </form>
+            <!-- </form> -->
             <!-- <div id="random-photo"></div> -->
             <!-- <div class="card random-photo" style="width: 18rem; height: 18rem;"> -->
                 <div class="card-header"  >
                     <!-- margin-left margin-right auto for image div -->
                     Random Photograph
                 </div>
-                <div class="imageBox">
-                <div id="imageHolder">
+                <div class="imageBox" style="display: inline-block;">
+                <div id="imageHolder"></div>
                 <canvas id="my-canvas" >  
                 </canvas>
                 </div>
@@ -58,9 +57,47 @@
             <!-- </div> -->
         </div>
         <hr>
-        <h3 id="photos">Similar Faces</h3>
-        <div id="similar-photos"></div>
-    <script>
+        <!-- <h3 id="photos">Similar Faces</h3> -->
+        <!-- <div id="similar-photos"></div> -->
+ 
+
+
+<script src="https://www.gstatic.com/firebasejs/5.8.2/firebase.js"></script>
+
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyAxL0rZW-BALEOuISAB6KX1oEv7uTxDG3A",
+    authDomain: "face-recognition-project-59b34.firebaseapp.com",
+    databaseURL: "https://face-recognition-project-59b34.firebaseio.com",
+    projectId: "face-recognition-project-59b34",
+    storageBucket: "face-recognition-project-59b34.appspot.com",
+    messagingSenderId: "786929191151"
+  };
+  firebase.initializeApp(config);
+
+
+    // var database is used to reference the database
+    var database = firebase.database();
+
+    // set initial value of click counter to 0
+    var clickCounter = 0;
+
+    // whenever a user licks the button
+    $(".btn").on("click", function() {
+   
+        // add to clickCounter
+        clickCounter++;
+
+        // store this click in firebase
+        database.ref().set({
+            clickCount: clickCounter
+        });
+    });
+
+</script>
+
+<script>
     // Face++ (API Key, API Secret Key, 1)
     var facepp = new FACEPP('tofb2KC3K9WNkY2-A_VISLJVjWMQh5Df', 'xMmnpBZx-r-3xNFAZJUGKXLnLAEFG4Ls', 1);
 
@@ -107,59 +144,48 @@
             }
         }
 
-        // run renderImage in success(e)
-        // draws a rectangle on the canvas -- its coordinates match the face coordinates
+    // run renderImage in success(e)
+    // draws a rectangle on the canvas -- its coordinates match the face coordinates
 
-        // If Dic is successful
-        function success(e){
-            console.log("Success! A face was detected");
-            console.log(e);
-            let textView = document.getElementById('text');
-            // Shows stringified detection object in #text
-            // textView.innerText = JSON.stringify(e,null,"\t");
-            let imageView = document.getElementById('imageHolder');
-            const faces = e.faces;
-            for (const index in faces){
-                const face = faces[index];
-                const face_rectangle = face.face_rectangle;
-                console.log(face_rectangle);
-                renderImage(photo)
+    // If Dic is successful
+    function success(e){
+        console.log("Success! A face was detected");
+        console.log(e);
+        let textView = document.getElementById('text');
+        // Shows stringified detection object in #text
+        // textView.innerText = JSON.stringify(e,null,"\t");
+        let imageView = document.getElementById('imageHolder');
+        const faces = e.faces;
+        for (const index in faces){
+            const face = faces[index];
+            const face_rectangle = face.face_rectangle;
+            console.log(face_rectangle);
+            renderImage(photo)
 
-                // call renderImage to draw the rectangle
+            // call renderImage to draw the rectangle
 
-                renderImage(imageSource, face_rectangle);
+            renderImage(imageSource, face_rectangle);
 
-        // var gender = face.attributes.gender.value;
-        // console.log("Gender: " + gender);
-        // var emotion = face.attributes.emotion;
-        // var anger = emotion.anger;
-        // var disgust = emotion.disgust;
-        // var sadness = emotion.sadness;
-        // var surprise = emotion.surprise;
-        // var fear = emotion.fear;
-        // var happiness = emotion.happiness;
-        // console.log("emotion response: " + emotion);
-
-        // gets coordinates of face area
-        var faceX = face_rectangle.left;
-   
-        var faceY = face_rectangle.top;
-        var faceW = face_rectangle.width;
-        var faceH = face_rectangle.height;
-        //square face container
-        var width = 320;
-        var height = 320;
-        var imageW = imageView.width;
-        var imageH = imageView.height;
-        var naturalWidth = imageView.naturalWidth;
-        var naturalHeight = imageView.naturalHeight;
-        const scale = imageW / naturalWidth;
-        console.log('scale > ' + scale);
-        // scales image
-        const offsetX = (width - imageW)*0.5;
-        const offsetY = (height - imageH)*0.5;
+            // gets coordinates of face area
+            var faceX = face_rectangle.left;
+    
+            var faceY = face_rectangle.top;
+            var faceW = face_rectangle.width;
+            var faceH = face_rectangle.height;
+            //square face container
+            var width = 320;
+            var height = 320;
+            var imageW = imageView.width;
+            var imageH = imageView.height;
+            var naturalWidth = imageView.naturalWidth;
+            var naturalHeight = imageView.naturalHeight;
+            const scale = imageW / naturalWidth;
+            console.log('scale > ' + scale);
+            // scales image
+            const offsetX = (width - imageW)*0.5;
+            const offsetY = (height - imageH)*0.5;
+        }
     }
-}
 //if this fails --
 function failed(e){
     console.log("Failed! No face detected");
@@ -201,6 +227,6 @@ function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
    }
 }
           
-    </script>
+</script>
 </body>
 </html>
