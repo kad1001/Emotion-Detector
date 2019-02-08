@@ -192,8 +192,38 @@ button{
 
     }
 
-    /* #imageHolder {
-        align: center;
-    } */
+    @media all and (max-width: 1300px) {
 
-  
+        header h1 {
+            padding: 5% 35% 5% 25%;
+            margin: 0 auto;
+        }
+    }
+
+    @media all and (max-width: 1000px) {
+
+        header h1 {
+            padding: 5% 35% 5% 15%;
+            margin: 0 auto;
+        }
+    }
+    
+    @media all and (max-width: 890px) {
+
+        header h1 {
+            padding: 5% 35% 5% 5%;
+            margin: 0 auto;
+            font-size: 56px;
+        }
+    }
+    
+    @media all and (max-width: 705px) {
+
+        h1 {
+            width: 100%;
+        }
+        .main-nav {
+            width: 100%;
+            align-content: center;
+        }
+    }   
