@@ -200,7 +200,7 @@ button{
         }
     }
 
-    @media all and (max-width: 1000px) {
+    @media all and (max-width: 1120px) {
 
         header h1 {
             padding: 5% 35% 5% 15%;
@@ -208,7 +208,7 @@ button{
         }
     }
     
-    @media all and (max-width: 890px) {
+    @media all and (max-width: 900px) {
 
         header h1 {
             padding: 5% 35% 5% 5%;
@@ -217,7 +217,7 @@ button{
         }
     }
     
-    @media all and (max-width: 705px) {
+    @media all and (max-width: 720px) {
 
         h1 {
             width: 100%;
