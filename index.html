@@ -69,40 +69,40 @@
             storageBucket: "face-recognition-project-59b34.appspot.com",
             messagingSenderId: "786929191151"
         };
+
         firebase.initializeApp(config);
 
 
         // var database is used to reference the database
         var database = firebase.database();
 
-        // set initial value of click counter to 0
-        var clickCounter = 0;
+        // used in firebase with real-time click count
+        var clickCounter = "";
 
-        // whenever a user licks the button
-        $(".btn").on("click", function () {
 
-            // add to clickCounter
+
+
+        // Face++ (API Key, API Secret Key, 1)
+        var facepp = new FACEPP('tofb2KC3K9WNkY2-A_VISLJVjWMQh5Df', 'xMmnpBZx-r-3xNFAZJUGKXLnLAEFG4Ls', 1);
+
+        $("button").on("click", function () {
+
+
+            // add to clickCounter in firebase
             clickCounter++;
 
             // store this click in firebase
             database.ref().set({
                 clickCount: clickCounter
             });
-        });
 
-    </script>
-
-    <script>
-        // Face++ (API Key, API Secret Key, 1)
-        var facepp = new FACEPP('tofb2KC3K9WNkY2-A_VISLJVjWMQh5Df', 'xMmnpBZx-r-3xNFAZJUGKXLnLAEFG4Ls', 1);
-
-        $("button").on("click", function () {
             var queryURL = "https://api.pexels.com/v1/search?query=face&per_page=25&page=1";
             $.ajax({
                 url: queryURL,
                 method: "GET",
                 beforeSend: function (xhr) { xhr.setRequestHeader("authorization", "563492ad6f9170000100000142244819b92d47e6bd879b704221ab7d"); }
             }).then(function (response) {
+
 
                 // photo from pexels request
                 var photo = response.photos;
@@ -114,9 +114,7 @@
                 image.attr({
                     src: photo[random_int].src.medium
                 });
-                //    puts response image in #imageHolder
-                // $("#imageHolder").empty();
-                // $("#imageHolder").append(image);
+
 
                 // hold the image src in variable imageSource
                 imageSource = photo[random_int].src.medium;
@@ -124,7 +122,10 @@
 
                 //    URL ACCESS
                 let dic = { 'image_url': photo[random_int].src.medium };
+                // face detection
                 facepp.detectFace(dic, success, failed);
+                // face token creation
+                // facepp.faceSetCreate(dic, success, failed);
 
                 function selectImage() {
                     let imageView = document.getElementById('imageHolder');
@@ -147,23 +148,32 @@
                     console.log("Success! A face was detected");
                     console.log(e);
                     let textView = document.getElementById('text');
+                    var imageID = e.image_id;
+                    console.log(imageID);
+
+                        // store this image id to firebase
+                        database.ref("/images").push({
+                            imageID: imageID
+                        });
+         
                     // Shows stringified detection object in #text
                     // textView.innerText = JSON.stringify(e,null,"\t");
                     let imageView = document.getElementById('imageHolder');
                     const faces = e.faces;
+
                     for (const index in faces) {
+
                         const face = faces[index];
+
                         const face_rectangle = face.face_rectangle;
                         console.log(face_rectangle);
-                        renderImage(photo)
 
+                        renderImage(photo);
                         // call renderImage to draw the rectangle
-
                         renderImage(imageSource, face_rectangle);
 
                         // gets coordinates of face area
                         var faceX = face_rectangle.left;
-
                         var faceY = face_rectangle.top;
                         var faceW = face_rectangle.width;
                         var faceH = face_rectangle.height;
