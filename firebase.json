@@ -1,0 +1,10 @@
+{
+  "hosting": {
+    "public": "face-practice",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
