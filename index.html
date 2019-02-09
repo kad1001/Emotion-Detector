@@ -1,232 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<!-- Face++ Javascript -->
-<script src="faceapi_commons.js"></script>
-<script type="text/javascript" src="faceapi_exif.js"></script>
-<script type="text/javascript" src="face_detection.js"></script>
-<script type="text/javascript" src="faceapi_display.js"></script>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Face++ Javascript -->
+    <script src="faceapi_commons.js"></script>
+    <script type="text/javascript" src="faceapi_exif.js"></script>
+    <script type="text/javascript" src="face_detection.js"></script>
+    <script type="text/javascript" src="faceapi_display.js"></script>
 
 
-<!-- jQuery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-<!-- CSS -->
-<link rel="stylesheet" type="text/css" media="screen" href="assets/css/style.css" />
-<!-- font awesome -->
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" media="screen" href="assets/css/style.css" />
+    <!-- font awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
+        crossorigin="anonymous">
 
+    <title>SurFace</title>
 
-<!-- bootstrap -->
-<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous"> -->
+    <style>
 
-<title>SurFace</title>
-
-<style>
-
-</style>
+    </style>
 </head>
+
 <body>
-        <header>
-            <ul class="main-nav">
-                <li class="active"><a href="index.html">HOME</a></li>
-                <li><a href="download.html">EMOTION DETECTOR</a></li>
-                <!-- <li><a href="index.html">EMOTION</a></li> -->
-            </ul>
-            <div><h1>S u r F a c e</h1></div>
-        </header>
-        <div id="container">
-            <!-- <form action="#"> -->
-                <div id="box" style="text-align: center;">
-                    <button type="button" class="btn btn-secondary"> <i class="far fa-user-circle"></i> </button>
-                </div>
-            <!-- </form> -->
-            <!-- <div id="random-photo"></div> -->
-            <!-- <div class="card random-photo" style="width: 18rem; height: 18rem;"> -->
-                <div class="card-header"  >
-                    <!-- margin-left margin-right auto for image div -->
-                    Random Photograph
-                </div>
-                <div class="imageBox" style="display: inline-block;">
-                <div id="imageHolder"></div>
-                <canvas id="my-canvas" >  
-                </canvas>
-            </div>
-            <!-- </div> -->
+    <header>
+        <ul class="main-nav">
+            <li class="active"><a href="index.html">HOME</a></li>
+            <li><a href="download.html">EMOTION</a></li>
+            <li><a href="rekog.html">RECOGNITION</a></li>
+        </ul>
+        <div>
+            <h1>S u r F a c e</h1>
         </div>
+    </header>
+    <div id="container">
+        <!-- <form action="#"> -->
+        <div id="box" style="text-align: center;">
+            <button type="button" class="btn btn-secondary"> <i class="far fa-user-circle"></i> </button>
+        </div>
+        <!-- </form> -->
+        <!-- <div id="random-photo"></div> -->
+        <!-- <div class="card random-photo" style="width: 18rem; height: 18rem;"> -->
+        <div class="card-header">
+            <!-- margin-left margin-right auto for image div -->
+            Random Photograph
+        </div>
+        <div class="imageBox" style="display: inline-block;">
+            <div id="imageHolder"></div>
+            <canvas id="my-canvas">
+            </canvas>
+        </div>
+        <!-- </div> -->
+    </div>
 
-        <!-- <hr> -->
-        <!-- <h3 id="photos">Similar Faces</h3> -->
-        <!-- <div id="similar-photos"></div> -->
- 
+    <script src="https://www.gstatic.com/firebasejs/5.8.2/firebase.js"></script>
+
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyAxL0rZW-BALEOuISAB6KX1oEv7uTxDG3A",
+            authDomain: "face-recognition-project-59b34.firebaseapp.com",
+            databaseURL: "https://face-recognition-project-59b34.firebaseio.com",
+            projectId: "face-recognition-project-59b34",
+            storageBucket: "face-recognition-project-59b34.appspot.com",
+            messagingSenderId: "786929191151"
+        };
+        firebase.initializeApp(config);
 
 
-<script src="https://www.gstatic.com/firebasejs/5.8.2/firebase.js"></script>
+        // var database is used to reference the database
+        var database = firebase.database();
 
-<script>
-  // Initialize Firebase
-  var config = {
-    apiKey: "AIzaSyAxL0rZW-BALEOuISAB6KX1oEv7uTxDG3A",
-    authDomain: "face-recognition-project-59b34.firebaseapp.com",
-    databaseURL: "https://face-recognition-project-59b34.firebaseio.com",
-    projectId: "face-recognition-project-59b34",
-    storageBucket: "face-recognition-project-59b34.appspot.com",
-    messagingSenderId: "786929191151"
-  };
-  firebase.initializeApp(config);
+        // set initial value of click counter to 0
+        var clickCounter = 0;
 
+        // whenever a user licks the button
+        $(".btn").on("click", function () {
 
-    // var database is used to reference the database
-    var database = firebase.database();
+            // add to clickCounter
+            clickCounter++;
 
-    // set initial value of click counter to 0
-    var clickCounter = 0;
-
-    // whenever a user licks the button
-    $(".btn").on("click", function() {
-   
-        // add to clickCounter
-        clickCounter++;
-
-        // store this click in firebase
-        database.ref().set({
-            clickCount: clickCounter
+            // store this click in firebase
+            database.ref().set({
+                clickCount: clickCounter
+            });
         });
-    });
 
-</script>
+    </script>
 
-<script>
-    // Face++ (API Key, API Secret Key, 1)
-    var facepp = new FACEPP('tofb2KC3K9WNkY2-A_VISLJVjWMQh5Df', 'xMmnpBZx-r-3xNFAZJUGKXLnLAEFG4Ls', 1);
+    <script>
+        // Face++ (API Key, API Secret Key, 1)
+        var facepp = new FACEPP('tofb2KC3K9WNkY2-A_VISLJVjWMQh5Df', 'xMmnpBZx-r-3xNFAZJUGKXLnLAEFG4Ls', 1);
 
-    $("button").on("click", function () {
-        var queryURL = "https://api.pexels.com/v1/search?query=face&per_page=25&page=1";
-        $.ajax({
+        $("button").on("click", function () {
+            var queryURL = "https://api.pexels.com/v1/search?query=face&per_page=25&page=1";
+            $.ajax({
                 url: queryURL,
                 method: "GET",
-                beforeSend: function(xhr){xhr.setRequestHeader("authorization", "563492ad6f9170000100000142244819b92d47e6bd879b704221ab7d");}
-        }).then(function (response) {
+                beforeSend: function (xhr) { xhr.setRequestHeader("authorization", "563492ad6f9170000100000142244819b92d47e6bd879b704221ab7d"); }
+            }).then(function (response) {
 
-    // photo from pexels request
-        var photo = response.photos;
-        var image = $("<img>");
-        image.addClass("generateImage");
+                // photo from pexels request
+                var photo = response.photos;
+                var image = $("<img>");
+                image.addClass("generateImage");
 
-        var random_int = Math.floor(Math.random() * (25 + 1));
+                var random_int = Math.floor(Math.random() * (25 + 1));
 
-        image.attr({
-            src: photo[random_int].src.medium
+                image.attr({
+                    src: photo[random_int].src.medium
+                });
+                //    puts response image in #imageHolder
+                // $("#imageHolder").empty();
+                // $("#imageHolder").append(image);
+
+                // hold the image src in variable imageSource
+                imageSource = photo[random_int].src.medium;
+                console.log(imageSource);
+
+                //    URL ACCESS
+                let dic = { 'image_url': photo[random_int].src.medium };
+                facepp.detectFace(dic, success, failed);
+
+                function selectImage() {
+                    let imageView = document.getElementById('imageHolder');
+                    const reader = new FileReader();
+                    reader.readAsDataURL(photo[random_int].src.medium);
+                    reader.onload = function (e) {
+                        const readImage = e.target.result;
+                        let imageData = facepp.dataURItoBlob(readImage);
+                        let attributes = 'gender,age,smiling,headpose,facequality,blur,eyestatus,emotion,ethnicity,beauty,mouthstatus,eyegaze,skinstatus';
+                        let dataDic = { 'image_url': imageData, 'return_landmark': 2, 'return_attributes': attributes };
+                        facepp.detectFace(dataDic, success, failed);
+                    }
+                }
+
+                // run renderImage in success(e)
+                // draws a rectangle on the canvas -- its coordinates match the face coordinates
+
+                // If Dic is successful
+                function success(e) {
+                    console.log("Success! A face was detected");
+                    console.log(e);
+                    let textView = document.getElementById('text');
+                    // Shows stringified detection object in #text
+                    // textView.innerText = JSON.stringify(e,null,"\t");
+                    let imageView = document.getElementById('imageHolder');
+                    const faces = e.faces;
+                    for (const index in faces) {
+                        const face = faces[index];
+                        const face_rectangle = face.face_rectangle;
+                        console.log(face_rectangle);
+                        renderImage(photo)
+
+                        // call renderImage to draw the rectangle
+
+                        renderImage(imageSource, face_rectangle);
+
+                        // gets coordinates of face area
+                        var faceX = face_rectangle.left;
+
+                        var faceY = face_rectangle.top;
+                        var faceW = face_rectangle.width;
+                        var faceH = face_rectangle.height;
+                        //square face container
+                        var width = 320;
+                        var height = 320;
+                        var imageW = imageView.width;
+                        var imageH = imageView.height;
+                        var naturalWidth = imageView.naturalWidth;
+                        var naturalHeight = imageView.naturalHeight;
+                        const scale = imageW / naturalWidth;
+                        console.log('scale > ' + scale);
+                        // scales image
+                        const offsetX = (width - imageW) * 0.5;
+                        const offsetY = (height - imageH) * 0.5;
+                    }
+                }
+                //if this fails --
+                function failed(e) {
+                    console.log("Failed! No face detected");
+                    console.log(e);
+                    let textView = document.getElementById('text');
+                    textView.innerText = JSON.stringify(e);
+                }
+            });
         });
-        //    puts response image in #imageHolder
-        // $("#imageHolder").empty();
-        // $("#imageHolder").append(image);
 
-        // hold the image src in variable imageSource
-        imageSource = photo[random_int].src.medium;
-        console.log(imageSource);
+        //HELPER FUNCTIONS
+        function renderImage(image_src, face_rectangle) {
+            var img = new Image();
+            img.src = image_src;
 
-        //    URL ACCESS
-        let dic = {'image_url' : photo[random_int].src.medium};
-        facepp.detectFace(dic,success, failed);
+            img.onload = function () {
+                var canvas = document.getElementById('my-canvas');
+                var ctx = canvas.getContext("2d");
+                canvas.width = img.width;
+                canvas.height = img.height;
 
-        function selectImage(){
-            let imageView = document.getElementById('imageHolder');
-            const reader = new FileReader();
-            reader.readAsDataURL(photo[random_int].src.medium);
-            reader.onload = function (e) {
-                const readImage = e.target.result;
-                let imageData = facepp.dataURItoBlob(readImage);
-                let attributes = 'gender,age,smiling,headpose,facequality,blur,eyestatus,emotion,ethnicity,beauty,mouthstatus,eyegaze,skinstatus';
-                let dataDic = {'image_url': imageData, 'return_landmark': 2, 'return_attributes': attributes};
-                facepp.detectFace(dataDic, success, failed);
+                var imgSize = calculateAspectRatioFit(img.width, img.height, canvas.clientWidth, canvas.clientHeight);
+                canvas.width = imgSize.width;
+
+                ctx.drawImage(img, 0, 0, imgSize.width, imgSize.height);
+                ctx.rect(face_rectangle.left, face_rectangle.top, face_rectangle.width, face_rectangle.height); //left, top, width, height
+                ctx.strokeStyle = "#FFFF00";
+                ctx.stroke();
             }
         }
 
-    // run renderImage in success(e)
-    // draws a rectangle on the canvas -- its coordinates match the face coordinates
-
-    // If Dic is successful
-    function success(e){
-        console.log("Success! A face was detected");
-        console.log(e);
-        let textView = document.getElementById('text');
-        // Shows stringified detection object in #text
-        // textView.innerText = JSON.stringify(e,null,"\t");
-        let imageView = document.getElementById('imageHolder');
-        const faces = e.faces;
-        for (const index in faces){
-            const face = faces[index];
-            const face_rectangle = face.face_rectangle;
-            console.log(face_rectangle);
-            renderImage(photo)
-
-            // call renderImage to draw the rectangle
-
-            renderImage(imageSource, face_rectangle);
-
-            // gets coordinates of face area
-            var faceX = face_rectangle.left;
-    
-            var faceY = face_rectangle.top;
-            var faceW = face_rectangle.width;
-            var faceH = face_rectangle.height;
-            //square face container
-            var width = 320;
-            var height = 320;
-            var imageW = imageView.width;
-            var imageH = imageView.height;
-            var naturalWidth = imageView.naturalWidth;
-            var naturalHeight = imageView.naturalHeight;
-            const scale = imageW / naturalWidth;
-            console.log('scale > ' + scale);
-            // scales image
-            const offsetX = (width - imageW)*0.5;
-            const offsetY = (height - imageH)*0.5;
+        function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
+            var ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
+            var rtnWidth = srcWidth * ratio;
+            var rtnHeight = srcHeight * ratio;
+            return {
+                width: rtnWidth,
+                height: rtnHeight
+            }
         }
-    }
-//if this fails --
-function failed(e){
-    console.log("Failed! No face detected");
-    console.log(e);
-    let textView = document.getElementById('text');
-    textView.innerText = JSON.stringify(e);
-}
-    });
-});
 
-//HELPER FUNCTIONS
-function renderImage(image_src, face_rectangle) {
-   var img = new Image();
-   img.src = image_src;
-
-   img.onload = function() {
-       var canvas = document.getElementById('my-canvas');
-       var ctx = canvas.getContext("2d");
-       canvas.width = img.width;
-       canvas.height = img.height;
-
-       var imgSize = calculateAspectRatioFit(img.width, img.height, canvas.clientWidth, canvas.clientHeight);
-       canvas.width = imgSize.width;
-
-       ctx.drawImage(img, 0, 0,imgSize.width, imgSize.height);
-       ctx.rect(face_rectangle.left, face_rectangle.top, face_rectangle.width, face_rectangle.height); //left, top, width, height
-       ctx.strokeStyle = "#FFFF00";
-       ctx.stroke();
-   }
-}
-
-function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
-   var ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
-   var rtnWidth = srcWidth * ratio;
-   var rtnHeight = srcHeight * ratio;
-   return {
-       width: rtnWidth,
-       height: rtnHeight
-   }
-}
-          
-</script>
+    </script>
 </body>
+
 </html>
