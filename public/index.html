@@ -72,14 +72,15 @@
 
         firebase.initializeApp(config);
 
-
         // var database is used to reference the database
         var database = firebase.database();
 
+        // initial values
         // used in firebase with real-time click count
         var clickCounter = "";
 
-
+        var imageID = "";
+        var idArr = [];
 
 
         // Face++ (API Key, API Secret Key, 1)
@@ -92,8 +93,9 @@
             clickCounter++;
 
             // store this click in firebase
-            database.ref().set({
+            database.ref("/sessionClicks").set({
                 clickCount: clickCounter
+                
             });
 
             var queryURL = "https://api.pexels.com/v1/search?query=face&per_page=25&page=1";
@@ -102,7 +104,6 @@
                 method: "GET",
                 beforeSend: function (xhr) { xhr.setRequestHeader("authorization", "563492ad6f9170000100000142244819b92d47e6bd879b704221ab7d"); }
             }).then(function (response) {
-
 
                 // photo from pexels request
                 var photo = response.photos;
@@ -151,11 +152,12 @@
                     var imageID = e.image_id;
                     console.log(imageID);
 
-                        // store this image id to firebase
-                        database.ref("/images").push({
-                            imageID: imageID
-                        });
-         
+                    // push this image ID to the array that will get stored in firebase
+                    idArr.push(imageID);
+      
+                    // 
+ 
+
                     // Shows stringified detection object in #text
                     // textView.innerText = JSON.stringify(e,null,"\t");
                     let imageView = document.getElementById('imageHolder');
@@ -165,6 +167,10 @@
 
                         const face = faces[index];
 
+                        database.ref("/faces").push({
+                        FaceObject: face
+                    });
+                
                         const face_rectangle = face.face_rectangle;
                         console.log(face_rectangle);
 
@@ -199,7 +205,21 @@
                     textView.innerText = JSON.stringify(e);
                 }
             });
+            
         });
+
+            // Firebase watcher + initial loader HINT: .on("value")
+    // database.ref().on("value", function(snapshot) {
+
+    //     // Log everything that's coming out of snapshot
+    //     // console.log(snapshot.val());
+    //     console.log(snapshot.val().imageID);
+
+
+    //     // Handle the errors
+    //     }, function(errorObject) {
+    //     console.log("Errors handled: " + errorObject.code);
+    //     });
 
         //HELPER FUNCTIONS
         function renderImage(image_src, face_rectangle) {
