@@ -23,24 +23,23 @@
     <header>
         <ul class="main-nav">
             <li class="active"><a href="index.html">HOME</a></li>
-            <li><a href="download.html">DOWNLOAD</a></li>
-            <li><a href="index.html">EMOTION</a></li>
+            <li><a href="download.html">EMOTION DETECTOR</a></li>
+            <!-- <li><a href="index.html">EMOTION</a></li> -->
         </ul>
         <h1>S u r F a c e</h1>
     </header>
 <div class="container">
-        <!-- <h4>Please use a small photo file! I am just a baby...</h4> -->
-        <p class="bScore">Female Beauty Score: <span id="FbeautyScore"></span> Male Beauty Score: <span id="MbeautyScore"></span> Gender:<span id="genderScore"></span>
+    <!-- display most prominent emotion -->
+    <h3 id="xVal"></h3>
+    <!-- display age -->
+    <h3 id="ageVal"></h3>
 
-        Happiness Score: <span id="emotionsScore"></span>
-        </p>
     <div class="button" onclick=clickInput()>Choose a photo:</div>
 
     <input id="input" type="file" accept="image/*" onchange="selectImage(this)"/>
 
     <div id="facesContainer">
         <img id="preview" />
-
     </div>
 
     <textarea id="text" readonly="readonly"></textarea>
@@ -135,6 +134,26 @@ function success(e){
         var surprise = emotion.surprise;
         var fear = emotion.fear;
         var happiness = emotion.happiness;
+
+        console.log(face.attributes.age);
+
+        console.log(emotion);
+        // x stores the emotion with highest score
+        var x=Object.keys(emotion).reduce(function(a, b){ return emotion[a] > emotion[b] ? a : b })
+        console.log(x);
+
+        // find the max value in the emotions
+        var valMax = (Math.max(anger, disgust, sadness, surprise, fear, happiness));
+        console.log(valMax);
+        // append to page
+        $("#xVal").text("I see " + x + "(" + valMax + "%)");
+
+        if (gender == "Female") {
+            $("#ageVal").append("She is " + face.attributes.age.value + " years old");
+        }
+        if (gender == "Male") {
+            $("#ageVal").append("He is " + face.attributes.age.value + " years old");
+        }
 
         console.log("emotion response: " + emotion);
         // append to html
