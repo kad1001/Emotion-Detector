@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.16.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery.js"></script>
+  <link rel="stylesheet" type="text/css" media="screen" href="assets/css/style.css" />
+  <meta charset="UTF-8">
+  <title>Rekognition</title>
+</head>
+
+<body>
+  <header>
+    <ul class="main-nav">
+      <li class="active"><a href="index.html">HOME</a></li>
+      <li><a href="download.html">EMOTION</a></li>
+      <li><a href="rekog.html">RECOGNITION</a></li>
+    </ul>
+    <div>
+      <h1>S u r F a c e</h1>
+    </div>
+  </header>
+  <div id="container">
+    <H1>Face Reader</H1>
+    <input type="file" name="fileToUpload" id="fileToUpload" accept="image/*">
+    <img id="imgSlot" />
+    <p id="opResult"></p>
+    <textarea id="response-text" readonly="readonly"></textarea>
+  </div>
+</body>
+<script>
+  document.getElementById("fileToUpload").addEventListener("change", function (event) {
+    function readURL(input) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+          $('#imgSlot').prepend('<img>', { id: 'fileToUpload', src: e.target.result });
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+    $("#profile-img").change(function () {
+      readURL(this);
+    });
+    $("#fileToUpload").prepend($("<img>", { id: "imgSlot", src: "image" }))
+    ProcessImage();
+  }, false);
+
+  //Calls DetectFaces API and shows estimated ages of detected faces
+  function DetectFaces(imageData) {
+    AWS.region = 'us-east-2'
+    var rekognition = new AWS.Rekognition();
+    var params = {
+      Image: {
+        Bytes: imageData
+      },
+      Attributes: [
+        'ALL',
+      ]
+    };
+    rekognition.detectFaces(params, function (err, data) {
+      if (err) console.log(err, err.stack); // an error occurred
+      else {
+
+        console.log(data.FaceDetails[0]);
+        var table = "<p><tr><th>Low </th><th> High</th></tr></p>";
+        // show each face and build out estimated age table
+        for (var i = 0; i < data.FaceDetails.length; i++) {
+          document.getElementById("response-text").innerHTML = JSON.stringify(data.FaceDetails);
+          console.log(data.FaceDetails.length);
+          table += '<tr><td>' + data.FaceDetails[i].AgeRange.Low +
+            '  </td><td>  ' + data.FaceDetails[i].AgeRange.High + '</td></tr>';
+        }
+        table += "</table>";
+        // table += "<table><p>Gender</p>";
+        for (var i = 0; i < data.FaceDetails.length; i++) {
+          //document.getElementById("text").innerHTML = JSON.stringify(data.FaceDetails);
+          //console.log(data.FaceDetails.length);
+          var gender = data.FaceDetails[i].Gender.Value
+          if (gender === 'Male') {
+            gender = 'He';
+            table += '<p> The Person in photo is a ' + data.FaceDetails[i].Gender.Value + ': ' +
+              data.FaceDetails[i].Gender.Confidence + '%</p>'
+          }
+          else {
+            gender = 'She';
+            table += '<p>The Person in the photo is a ' + data.FaceDetails[i].Gender.Value + ': ' +
+              data.FaceDetails[i].Gender.Confidence + '%</p>'
+          }
+          /*
+          table += '<tr><td>' + data.FaceDetails[i].Gender.Value + ': ' +
+          data.FaceDetails[i].Gender.Confidence + '</td></tr>';
+          */
+        }
+        table += "</table>";
+
+        for (var i = 0; i < data.FaceDetails.length; i++) {
+          table += "<p>" + gender + " is feeling ";
+          //document.getElementById("text").innerHTML = JSON.stringify(data.FaceDetails);
+          //console.log(data.FaceDetails.length);
+          for (var j = 0; j < data.FaceDetails[i].Emotions.length; j++) {
+            console.log(data.FaceDetails[i].Emotions.lowercase);
+            if (data.FaceDetails[i].Emotions[j].Confidence >= 50) {
+              table += data.FaceDetails[i].Emotions[j].Type + ': ' +
+                data.FaceDetails[i].Emotions[j].Confidence + '%</p>';
+            }
+          }
+          if (data.FaceDetails[i].Eyeglasses.Value === true && data.FaceDetails[i].Sunglasses.Value === true) {
+            console.log(gender + " is wearing sunglasses:");
+            table += "<p>" + gender + " is wearing sunglasses: " +
+              data.FaceDetails[i].Sunglasses.Confidence + "</p>";
+            // table += '<tr><td>' + data.FaceDetails[i].Sunglasses.Value + ': ' +
+            //   data.FaceDetails[i].Sunglasses.Confidence + '</td></tr>';
+          }
+          else if (data.FaceDetails[i].Eyeglasses.Value === true) {
+            console.log("Person is wearing glasses");
+            table += "<p>" + gender + " is wearing glasses: " + data.FaceDetails[i].Eyeglasses.Confidence + "</p>";
+
+            // table += '<p>' + data.FaceDetails[i].Eyeglasses.Value + ': ' +
+            //   data.FaceDetails[i].Eyeglasses.Confidence + '</p>';
+          }
+          else {
+            table += "<p>" + gender + " is not wearing glasses.</p>";
+          }
+
+          if (data.FaceDetails[i].Beard.Value === true) {
+            table += "<p>" + gender + " has a beard";
+            table += ': ' +
+              data.FaceDetails[i].Beard.Confidence + '</p>';
+          }
+        }
+        table += "</table>";
+        document.getElementById("opResult").innerHTML = table;
+      }
+    });
+  }
+  //Loads selected image and unencodes image bytes for Rekognition DetectFaces API
+  function ProcessImage() {
+    AnonLog();
+    var control = document.getElementById("fileToUpload");
+    var file = control.files[0];
+
+    // Load base64 encoded image 
+    var reader = new FileReader();
+    reader.onload = (function (theFile) {
+      return function (e) {
+        var img = document.createElement('img');
+        var image = null;
+        img.src = e.target.result;
+        var jpg = true;
+        $("imgSlot").attr("src", img.src)
+        try {
+          image = atob(e.target.result.split("data:image/jpeg;base64,")[1]);
+
+        } catch (e) {
+          jpg = false;
+        }
+        if (jpg == false) {
+          try {
+            image = atob(e.target.result.split("data:image/png;base64,")[1]);
+          } catch (e) {
+            alert("Not an image file Rekognition can process");
+            return;
+          }
+        }
+        //unencode image bytes for Rekognition DetectFaces API 
+        var length = image.length;
+        imageBytes = new ArrayBuffer(length);
+        var ua = new Uint8Array(imageBytes);
+        for (var i = 0; i < length; i++) {
+          ua[i] = image.charCodeAt(i);
+        }
+        //Call Rekognition  
+        DetectFaces(imageBytes);
+      };
+    })(file);
+    reader.readAsDataURL(file);
+  }
+  //Provides anonymous log on to AWS services
+  function AnonLog() {
+
+    // Configure the credentials provider to use your identity pool
+    AWS.config.region = 'us-east-2' // Region
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+      IdentityPoolId: 'us-east-2:2ecc0802-4d04-40de-a512-ce042359a136',
+    });
+    // Make the call to obtain credentials
+    AWS.config.credentials.get(function () {
+      // Credentials will be available when this function is called.
+      var accessKeyId = AWS.config.credentials.accessKeyId;
+      var secretAccessKey = AWS.config.credentials.secretAccessKey;
+      var sessionToken = AWS.config.credentials.sessionToken;
+    });
+  }
+</script>
+
+</html>
